@@ -21,29 +21,30 @@ jobs:
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
+      with:
+        cmdline-tools-version: 11076708
+
+    - name: Accept Android Licenses
+      run: yes | sdkmanager --licenses || true
+
+    - name: Generate Dummy Keystore and Env
+      run: |
+        touch .env
+        touch .env.example
+        keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US" || true
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
       with:
         gradle-version: '8.11.1'
 
-    - name: Generate Debug Keystore
-      run: |
-        if [ ! -f debug.keystore ]; then
-          if [ -f debug.keystore.base64 ]; then
-            base64 -d debug.keystore.base64 > debug.keystore
-          else
-            keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
-          fi
-        fi
-
     - name: Build Debug APK
-      run: gradle :app:assembleDebug --stacktrace --no-daemon
+      run: gradle :app:assembleDebug --stacktrace --no-daemon -Dorg.gradle.jvmargs="-Xmx3g -XX:MaxMetaspaceSize=1g"
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: BanglaQuizApp-APK
-        path: app/build/outputs/apk/debug/app-debug.apk
+        path: app/build/outputs/apk/debug/*.apk
 
 
