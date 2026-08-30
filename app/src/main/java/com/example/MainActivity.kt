@@ -41,6 +41,7 @@ import com.example.ui.components.OptionalUpdateDialog
 import com.example.ui.navigation.Screen
 import com.example.ui.navigation.bottomNavScreens
 import com.example.ui.screens.AdminPanelScreen
+import com.example.ui.screens.AuthDialog
 import com.example.ui.screens.HomeScreen
 import com.example.ui.screens.LeaderboardScreen
 import com.example.ui.screens.MissionsScreen
@@ -52,6 +53,7 @@ import com.example.ui.theme.BrandPrimary
 import com.example.ui.theme.MyApplicationTheme
 import com.example.ui.viewmodel.QuizViewModel
 import com.example.util.ShareHelper
+import com.example.util.SoundManager
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,8 +89,23 @@ fun MainAppContainer(viewModel: QuizViewModel) {
 
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
     var hasDismissedOptionalUpdate by remember { mutableStateOf(false) }
+    var showAuthDialog by remember { mutableStateOf(false) }
 
-    val currentAppVersionCode = 1
+    SoundManager.isSoundEnabled = userProfile.isSoundEnabled
+
+    val currentAppVersionCode = 2
+
+    // Sign Up & Login Dialog
+    if (showAuthDialog) {
+        AuthDialog(
+            userProfile = userProfile,
+            onDismiss = { showAuthDialog = false },
+            onAuthSuccess = { name, email ->
+                viewModel.updateUserAuth(name, email)
+                showAuthDialog = false
+            }
+        )
+    }
 
     // Maintenance Mode Screen
     if (appConfig.isMaintenanceMode && !isAdminMode) {
@@ -272,7 +289,8 @@ fun MainAppContainer(viewModel: QuizViewModel) {
                         },
                         onAnnouncementClick = { ann -> viewModel.openAnnouncement(ann) },
                         onClaimDailyReward = { viewModel.claimDailyReward() },
-                        onNavigateToTournaments = { currentScreen = Screen.Tournaments }
+                        onNavigateToTournaments = { currentScreen = Screen.Tournaments },
+                        onAdReward = { viewModel.earnAdRewardCoins(it) }
                     )
 
                     Screen.Tournaments -> TournamentsScreen(
@@ -305,7 +323,9 @@ fun MainAppContainer(viewModel: QuizViewModel) {
                         onToggleLanguage = { viewModel.toggleLanguage() },
                         onToggleDarkMode = { viewModel.toggleDarkMode() },
                         onApplyReferralCode = { code -> viewModel.applyReferralCode(code) },
-                        onOpenAdminPanel = { viewModel.setAdminMode(true) }
+                        onOpenAdminPanel = { viewModel.setAdminMode(true) },
+                        onOpenAuthDialog = { showAuthDialog = true },
+                        onAdReward = { viewModel.earnAdRewardCoins(it) }
                     )
                 }
             }

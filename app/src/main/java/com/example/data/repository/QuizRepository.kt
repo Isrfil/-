@@ -289,4 +289,18 @@ class QuizRepository(
         }
         return false
     }
+
+    fun updateUserAuth(displayName: String, email: String) {
+        val current = _userProfile.value
+        _userProfile.value = current.copy(
+            displayName = displayName,
+            email = email,
+            coins = current.coins + 50 // Signup / login bonus
+        )
+    }
+
+    fun addRewardCoins(amount: Int) {
+        val current = _userProfile.value
+        _userProfile.value = current.copy(coins = current.coins + amount)
+    }
 }

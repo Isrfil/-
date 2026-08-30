@@ -14,6 +14,7 @@ import com.example.model.QuizQuestion
 import com.example.model.QuizResult
 import com.example.model.Tournament
 import com.example.model.UserProfile
+import com.example.util.SoundManager
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -143,6 +144,9 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
             while (_remainingTimeSeconds.value > 0 && !_isAnswerRevealed.value) {
                 delay(1000)
                 _remainingTimeSeconds.value -= 1
+                if (_remainingTimeSeconds.value in 1..5 && !_isAnswerRevealed.value) {
+                    SoundManager.playTimerTick()
+                }
             }
             if (_remainingTimeSeconds.value <= 0 && !_isAnswerRevealed.value) {
                 // Time up! Auto reveal as wrong/skipped
@@ -152,6 +156,7 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun handleTimeUp() {
+        SoundManager.playWrong()
         _isAnswerRevealed.value = true
         _wrongCount.value += 1
         _streakCount.value = 0
@@ -181,12 +186,14 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
         val isCorrect = optionIndex == currentQ.correctOptionIndex
 
         if (isCorrect) {
+            SoundManager.playCorrect()
             val speedBonus = _remainingTimeSeconds.value * 2
             val pointsEarned = currentQ.points + speedBonus
             _currentScore.value += pointsEarned
             _correctCount.value += 1
             _streakCount.value += 1
         } else {
+            SoundManager.playWrong()
             _wrongCount.value += 1
             _streakCount.value = 0
         }
@@ -203,6 +210,7 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun nextQuestion() {
+        SoundManager.playClick()
         val nextIdx = _currentQuestionIndex.value + 1
         val questions = _currentQuestions.value
 
@@ -219,6 +227,7 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun finishQuiz() {
         timerJob?.cancel()
+        SoundManager.playCelebration()
         val totalTime = ((System.currentTimeMillis() - quizStartTimeEpoch) / 1000).toInt()
         val totalQ = _currentQuestions.value.size
         val correct = _correctCount.value
@@ -262,6 +271,7 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
         if (_is5050Used.value || _isAnswerRevealed.value) return
         val currentQ = _currentQuestions.value.getOrNull(_currentQuestionIndex.value) ?: return
 
+        SoundManager.playLifeline()
         val wrongIndices = (0 until currentQ.optionsBn.size).filter { it != currentQ.correctOptionIndex }
         val toHide = wrongIndices.shuffled().take(2).toSet()
 
@@ -271,22 +281,34 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
 
     fun useSkipLifeline() {
         if (_isSkipUsed.value || _isAnswerRevealed.value) return
+        SoundManager.playLifeline()
         _isSkipUsed.value = true
         nextQuestion()
     }
 
     fun useHintLifeline() {
         if (_isHintUsed.value) return
+        SoundManager.playLifeline()
         _isHintUsed.value = true
     }
 
     // User Profile Actions
     fun claimDailyReward(): Boolean {
+        SoundManager.playCelebration()
         return repository.claimDailyReward()
     }
 
     fun applyReferralCode(code: String): Boolean {
+        SoundManager.playClick()
         return repository.applyReferralCode(code)
+    }
+
+    fun updateUserAuth(displayName: String, email: String) {
+        repository.updateUserAuth(displayName, email)
+    }
+
+    fun earnAdRewardCoins(amount: Int = 50) {
+        repository.addRewardCoins(amount)
     }
 
     fun claimMission(missionId: String) {

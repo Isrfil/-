@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Login
 import androidx.compose.material.icons.filled.MonetizationOn
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Shop
@@ -69,6 +70,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.AppConfig
 import com.example.model.UserProfile
+import com.example.ui.components.AdBannerComponent
 import com.example.ui.theme.BrandEmerald
 import com.example.ui.theme.BrandGold
 import com.example.ui.theme.BrandPrimary
@@ -92,6 +94,8 @@ fun ProfileScreen(
     onToggleDarkMode: () -> Unit,
     onApplyReferralCode: (String) -> Boolean,
     onOpenAdminPanel: () -> Unit,
+    onOpenAuthDialog: (() -> Unit)? = null,
+    onAdReward: ((Int) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -146,7 +150,7 @@ fun ProfileScreen(
 
                         Spacer(modifier = Modifier.width(14.dp))
 
-                        Column {
+                        Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = userProfile.displayName,
                                 style = MaterialTheme.typography.titleLarge,
@@ -172,6 +176,17 @@ fun ProfileScreen(
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                                 )
                             }
+                        }
+
+                        IconButton(
+                            onClick = { onOpenAuthDialog?.invoke() },
+                            modifier = Modifier.testTag("profile_login_btn")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Login,
+                                contentDescription = "Login / Switch Account",
+                                tint = BrandPrimary
+                            )
                         }
                     }
 
@@ -239,6 +254,13 @@ fun ProfileScreen(
                     }
                 }
             }
+        }
+
+        // In-App Reward Ad Placement in Profile
+        item {
+            AdBannerComponent(
+                onRewardEarned = onAdReward
+            )
         }
 
         // Referral & Invite Friends Card (Requirements 52 & 58)

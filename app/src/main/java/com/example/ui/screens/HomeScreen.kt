@@ -54,6 +54,7 @@ import com.example.model.AppConfig
 import com.example.model.LiveAnnouncement
 import com.example.model.QuizCategory
 import com.example.model.UserProfile
+import com.example.ui.components.AdBannerComponent
 import com.example.ui.components.CategoryCard
 import com.example.ui.components.LiveAnnouncementTicker
 import com.example.ui.theme.BrandEmerald
@@ -79,6 +80,7 @@ fun HomeScreen(
     onAnnouncementClick: (LiveAnnouncement) -> Unit,
     onClaimDailyReward: () -> Boolean,
     onNavigateToTournaments: () -> Unit,
+    onAdReward: ((Int) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -98,6 +100,13 @@ fun HomeScreen(
             HeroBannerCard(
                 onQuickPlayClick = onQuickPlayClick,
                 modifier = Modifier.testTag("hero_banner_card")
+            )
+        }
+
+        // In-App Ads Banner
+        item(span = { GridItemSpan(2) }) {
+            AdBannerComponent(
+                onRewardEarned = onAdReward
             )
         }
 
