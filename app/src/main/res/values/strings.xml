@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Bangla Quiz</string>
+    <string name="app_tagline">জ্ঞান অর্জন করুন, কয়েন জিতুন!</string>
+    <string name="share_app_title">Bangla Quiz অ্যাপ শেয়ার করুন</string>
+    <string name="share_app_message">🏆 সেরা বাংলা কুইজ অ্যাপ Bangla Quiz খেলুন এবং জ্ঞান বৃদ্ধির সাথে সাথে জিতে নিন আকর্ষণীয় পুরস্কার ও কয়েন! এখনই ডাউনলোড করুন: %s</string>
+    <string name="share_quiz_result">🎯 আমি Bangla Quiz এ %1$d এর মধ্যে %2$d পেয়েছি (%3$d%% সঠিক)! আপনি কি আমাকে হারাতে পারবেন? খেলুন এখনই: %4$s</string>
+    <string name="share_tournament_msg">⚔️ Bangla Quiz-এর \"%1$s\" টুর্নামেন্টে যোগ দিন! প্রাইজ পুল %2$d কয়েন! এখনই অংশগ্রহণ করুন: %3$s</string>
+    <string name="share_achievement_msg">🎖️ আমি Bangla Quiz এ \"%1$s\" অর্জন আনলক করেছি! আপনিও খেলুন: %2$s</string>
+</resources>

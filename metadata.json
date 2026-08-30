@@ -1,0 +1,6 @@
+{
+  "name": "Bangla Quiz",
+  "description": "Play Store Quality Bangla Quiz App with Dynamic Cloud Updates, Live Tournaments, Centralized Settings, AI Questions, and Rich Reward System.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
